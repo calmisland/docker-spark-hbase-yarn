@@ -175,3 +175,5 @@ You can remove the local `/etc/hosts` by executing this:
 Finally, if you want to remove the VM, issue this command:
 
     $ docker-machine rm dmhadoop
+
+
