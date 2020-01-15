@@ -18,24 +18,18 @@ Prerequisites
 There are the prerequisites that needs to satisfy in order to run it hopefully without issues:
 
 - Mac OS X
-- Docker Engine: 1.11.1
-- Docker-Machine: 0.7.0
-- Docker-Compose: 1.7.0
+- Docker Engine on Local: 18.09.2
+- Docker-Machine on Local: 0.16.1
+- Docker-Compose on Docker-Machine: 1.25.1
 
 Create local VM where to run these services
 ===========================================
 
-    $ docker-machine create -d virtualbox --virtualbox-memory "4096" dmhadoop
+    $ ./configure-localenv.sh -v $DOCKER_MACHINE_NAME 
 
 Then, connect your current shell session to this new virtual machine:
 
-    $ eval $(docker-machine env dmhadoop)
-
-So you are one step away yet to configure your host to be able to work with the local environment. Your `/etc/hosts` and the one inside the VM you just created must be updated to be able to resolve some hostnames properly. For such a thing, I created a shell script that takes care of it:
-
-    $ ./prepare-localenv.sh
-
-This script will add a new entry (or update in case it already exists) in your `/etc/hosts` with the following names: `hdfs-master`, `hbase-master`, `yarn-master` and the name of the VM you created above, all of them resolving to the IP address of the VM created previously. This step will ask you for the root password. It also updates the VM's `/etc/hosts` with `hbase-master` and the VM name resolving to the VM IP. Note that normally the VM name is pointing to `127.0.0.1` inside the VM's `/etc/hosts` which makes HBASE to not work properly.
+    $ eval $(docker-machine env $DOCKER_MACHINE_NAME)
 
 From within your programs you can use the VM's name (e.g. dmhadoop) you use above to refer to the different services, e.g.:
 
@@ -47,7 +41,10 @@ From within your programs you can use the VM's name (e.g. dmhadoop) you use abov
 Run Hadoop/HBase/Yarn
 ---------------------
 
-    $ docker-compose up -d
+	$ docker-machine ssh $DOCKER_MACHINE_NAME
+	# The docker-machine shared the directory, /User of the local machine.
+	$ cd $REPOSITORY_PATH_ON_LOCAL_MACHINE
+	$ ./configure-docker-machine-env.sh
 
 You can have a look at the logs this way:
 
@@ -57,9 +54,9 @@ Press `Ctrl+C` to stop the tail session.
 
 If everything goes fine, you should access to this URL:
 
-- HDFS WebApp —> http://dmhadoop:50070/
-- YARN WebApp —> http://dmhadoop:8088/cluster/apps
-- HBASE WebApp —> http://dmhadoop:16010/master-status
+- HDFS WebApp —> http://$DOCKER_MACHINE_NAME:50070/
+- YARN WebApp —> http://$DOCKER_MACHINE_NAME:8088/cluster/apps
+- HBASE WebApp —> http://$DOCKER_MACHINE_NAME:16010/master-status
 
 
 HBASE ZooKeeper is running in port `2181`.
@@ -174,6 +171,6 @@ You can remove the local `/etc/hosts` by executing this:
 
 Finally, if you want to remove the VM, issue this command:
 
-    $ docker-machine rm dmhadoop
+    $ docker-machine rm $DOCKER_MACHINE_NAME 
 
 

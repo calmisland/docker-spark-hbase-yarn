@@ -8,4 +8,9 @@ apt-get install $minimal_apt_get_args $HBASE_BUILD_PACKAGES
 
 cd /opt
 
-curl -SL http://archive.apache.org/dist/hbase/$HBASE_VERSION/hbase-$HBASE_VERSION-bin.tar.gz | tar -x -z && mv hbase-${HBASE_VERSION} hbase
+mv /opt/hbase-1.4.10 /opt/hbase
+
+sed -i 's/HOSTNAME/'"$HOSTNAME"'/' /opt/hbase/conf/hbase-site.xml
+sed -i 's/HOSTNAME/'"$HOSTNAME"'/' /opt/hbase/conf/zoo.cfg
+sed -i 's/localhost/'"$HOSTNAME"'/' /opt/hbase/conf/regionservers
+sed -i s/NAMENODE_PORT/$NAMENODE_PORT/ /opt/hbase/conf/hbase-site.xml

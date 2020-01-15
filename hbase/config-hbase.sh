@@ -5,7 +5,7 @@
 # Prevent initramfs updates from trying to run grub and lilo.
 export INITRD=no
 export DEBIAN_FRONTEND=noninteractive
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export JAVA_HOME=/opt/java/openjdk
 
 minimal_apt_get_args='-y --no-install-recommends'
 
@@ -22,3 +22,6 @@ HBASE_BUILD_PACKAGES="curl"
 
 ## Run time dependencies ##
 HBASE_RUN_PACKAGES="openjdk-8-jdk"
+
+
+HOSTNAME=datapipeline
