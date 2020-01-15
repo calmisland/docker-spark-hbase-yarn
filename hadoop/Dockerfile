@@ -2,14 +2,18 @@
 #
 # docker build -t sequenceiq/hadoop-ubuntu:2.6.0 .
 
-FROM sequenceiq/pam:ubuntu-14.04
-MAINTAINER SequenceIQ
-
+FROM adoptopenjdk/openjdk8:jdk8u222-b10
 USER root
 
 # install dev tools
-RUN apt-get update
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* && apt-get update
 RUN apt-get install -y curl tar sudo openssh-server openssh-client rsync
+
+# Download
+ADD hadoop-2.8.5.tar.gz /usr/local/
+ADD spark-2.4.4-bin-without-hadoop.tgz /usr/local/
+RUN cd /usr/local/hadoop-2.8.5 && cd /usr/local/spark-2.4.4-bin-without-hadoop
+
 
 # passwordless ssh
 RUN rm -f /etc/ssh/ssh_host_dsa_key /etc/ssh/ssh_host_rsa_key /root/.ssh/id_rsa
@@ -19,19 +23,14 @@ RUN ssh-keygen -q -N "" -t rsa -f /root/.ssh/id_rsa
 RUN cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
 
 # java
-RUN mkdir -p /usr/java/default && \
-    curl -Ls 'http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.tar.gz' -H 'Cookie: oraclelicense=accept-securebackup-cookie' | \
-    tar --strip-components=1 -xz -C /usr/java/default/
-
-ENV JAVA_HOME /usr/java/default/
+ENV JAVA_HOME /opt/java/openjdk
 ENV PATH $PATH:$JAVA_HOME/bin
 
 # hadoop
-RUN curl -s http://www.eu.apache.org/dist/hadoop/common/hadoop-2.6.0/hadoop-2.6.0.tar.gz | tar -xz -C /usr/local/
-RUN cd /usr/local && ln -s ./hadoop-2.6.0 hadoop
+RUN cd /usr/local && ln -s ./hadoop-2.8.5 hadoop
 
 ENV HADOOP_PREFIX /usr/local/hadoop
-RUN sed -i '/^export JAVA_HOME/ s:.*:export JAVA_HOME=/usr/java/default\nexport HADOOP_PREFIX=/usr/local/hadoop\nexport HADOOP_HOME=/usr/local/hadoop\n:' $HADOOP_PREFIX/etc/hadoop/hadoop-env.sh
+RUN sed -i '/^export JAVA_HOME/ s:.*:export JAVA_HOME=/opt/java/openjdk\nexport HADOOP_PREFIX=/usr/local/hadoop\nexport HADOOP_HOME=/usr/local/hadoop\n:' $HADOOP_PREFIX/etc/hadoop/hadoop-env.sh
 RUN sed -i '/^export HADOOP_CONF_DIR/ s:.*:export HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop/:' $HADOOP_PREFIX/etc/hadoop/hadoop-env.sh
 #RUN . $HADOOP_PREFIX/etc/hadoop/hadoop-env.sh
 
@@ -46,15 +45,14 @@ ADD hdfs-site.xml $HADOOP_PREFIX/etc/hadoop/hdfs-site.xml
 ADD mapred-site.xml $HADOOP_PREFIX/etc/hadoop/mapred-site.xml
 
 # Spark
-RUN curl -s http://d3kbcqa49mib13.cloudfront.net/spark-1.5.1-bin-hadoop2.6.tgz | tar -xz -C /usr/local/
-RUN cd /usr/local && ln -s spark-1.5.1-bin-hadoop2.6 spark
+RUN cd /usr/local && ln -s spark-2.4.4-bin-without-hadoop spark
 ENV SPARK_HOME /usr/local/spark
 
 RUN $HADOOP_PREFIX/bin/hdfs namenode -format
 
 # fixing the libhadoop.so like a boss
-RUN rm  /usr/local/hadoop/lib/native/*
-RUN curl -Ls http://dl.bintray.com/sequenceiq/sequenceiq-bin/hadoop-native-64-2.6.0.tar|tar -x -C /usr/local/hadoop/lib/native/
+# RUN rm -rf /usr/local/hadoop/lib/native/*
+# RUN curl -Ls http://dl.bintray.com/sequenceiq/sequenceiq-bin/hadoop-native-64-2.6.0.tar|tar -x -C /usr/local/hadoop/lib/native/
 
 ADD ssh_config /root/.ssh/config
 RUN chmod 600 /root/.ssh/config

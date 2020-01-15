@@ -4,14 +4,14 @@
 
 # http://docs.docker.io/en/latest/use/builder/
 
-FROM ubuntu
-MAINTAINER Dave Beckett <dave@dajobe.org>
+FROM adoptopenjdk/openjdk8:jdk8u222-b10 
 
 COPY *.sh /build/
 COPY wait_for_it.sh /
 
-ENV HBASE_VERSION 1.1.4
+ENV HBASE_VERSION 1.4.0
 
+ADD hbase-1.4.10-bin.tar.gz /opt
 RUN /build/prepare-hbase.sh && \
     cd /opt/hbase && /build/build-hbase.sh \
     cd / && /build/cleanup-hbase.sh && rm -rf /build
@@ -24,12 +24,6 @@ ADD ./zoo.cfg /opt/hbase/conf/zoo.cfg
 
 ADD ./hbase-server /opt/hbase-server
 
-# REST API
-EXPOSE 8080
-# Thrift API
-EXPOSE 9090
-# Thrift Web UI
-EXPOSE 9095
 # HBase's zookeeper - used to find servers
 EXPOSE 2181
 ## HBase Master API port ??
