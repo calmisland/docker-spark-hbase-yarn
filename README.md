@@ -25,6 +25,7 @@ There are the prerequisites that needs to satisfy in order to run it hopefully w
 Create local VM where to run these services
 ===========================================
 
+	$ PROFILE=$AWS_PROFILE ./download-build-resources.sh
     $ ./configure-localenv.sh -v $DOCKER_MACHINE_NAME 
 
 Then, connect your current shell session to this new virtual machine:
