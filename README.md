@@ -25,39 +25,24 @@ There are the prerequisites that needs to satisfy in order to run it hopefully w
 Create local VM where to run these services
 ===========================================
 
-	$ PROFILE=$AWS_PROFILE ./download-build-resources.sh
-    $ ./configure-localenv.sh -v $DOCKER_MACHINE_NAME 
+	$ PROFILE=[AWS_PROFILE] ./download-resources.sh
+    $ ./configure-localenv.sh -v [DOCKER_MACHINE_NAME]
 
 Then, connect your current shell session to this new virtual machine:
 
-    $ eval $(docker-machine env $DOCKER_MACHINE_NAME)
-
-From within your programs you can use the VM's name (e.g. dmhadoop) you use above to refer to the different services, e.g.:
-
-    val conf = new Configuration()
-    conf.set("fs.defaultFS", "hdfs://dmhadoop:8020")
-    val fs = FileSystem.get(conf)
+    $ eval $(docker-machine env [DOCKER_MACHINE_NAME])
 
 
 Run Hadoop/HBase/Yarn
 ---------------------
 
-	$ docker-machine ssh $DOCKER_MACHINE_NAME
-	# The docker-machine shared the directory, /User of the local machine.
-	$ cd $REPOSITORY_PATH_ON_LOCAL_MACHINE
-	$ ./configure-docker-machine-env.sh
-
-You can have a look at the logs this way:
-
-    $ docker-compose logs -ft
-
-Press `Ctrl+C` to stop the tail session.
+	$ ./start-hbase-cluster.sh -p [start|stop|logs] -v [DOCKER_MACHINE_NAME]
 
 If everything goes fine, you should access to this URL:
 
-- HDFS WebApp —> http://$DOCKER_MACHINE_NAME:50070/
-- YARN WebApp —> http://$DOCKER_MACHINE_NAME:8088/cluster/apps
-- HBASE WebApp —> http://$DOCKER_MACHINE_NAME:16010/master-status
+- HDFS WebApp —> http://[DOCKER_MACHINE_NAME]:50070/
+- YARN WebApp —> http://[DOCKER_MACHINE_NAME]:8088/cluster/apps
+- HBASE WebApp —> http://[DOCKER_MACHINE_NAME]:16010/master-status
 
 
 HBASE ZooKeeper is running in port `2181`.
