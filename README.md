@@ -22,22 +22,23 @@ There are the prerequisites that needs to satisfy in order to run it hopefully w
 - Docker-Machine on Local: 0.16.1
 - Docker-Compose on Docker-Machine: 1.25.1
 
-Create local VM where to run these services
+QuickStart
 ===========================================
+
+Set-up the new docker-machine to run the HBase Cluster. The docker-machine is an isloated environment from the local machine.
 
 ```shell
 PROFILE=[AWS_PROFILE] ./download-resources.sh
 ./configure-localenv.sh -v [DOCKER_MACHINE_NAME]
 ```
 
-Then, connect your current shell session to this new virtual machine:
+Confirm the installation success
 
 ```shell
 eval $(docker-machine env [DOCKER_MACHINE_NAME])
 ```
 
-Run Hadoop/HBase/Yarn
----------------------
+Start cluster
 
 ```shell
 ./hbase-cluster.sh -p start -v [DOCKER_MACHINE_NAME]
@@ -56,39 +57,50 @@ Other important port is the NameNode, which is running on port `8020`. You can c
 Important Note: The containers are running with the `host` network mode, which means that containers are using host network interface. There is no isolation between host and containers from a network standpoint.
 
 
-Additional Examples
+Tear Down
 =========
 
-There are 4 additional options to control containers.
+When tearing down the entire set-up, runs:
+
+```shell
+./hbase-cluster.sh -p stop -v [DOCKER_MACHINE_NAME]       
+docker-machine rm [DOCKER_MACHINE_NAME]
+DOCKER_MACHINE_NAME=[DOCKER_MACHINE_NAME] ./remove-localenv.sh
+```
+
+Control the Cluster
+=========
+
+* Stop
+
+```shell
+./hbase-cluster.sh -p start -v [DOCKER_MACHINE_NAME]
+```
+
 * Stop
 
 ```shell
 ./hbase-cluster.sh -p stop -v [DOCKER_MACHINE_NAME]
 ```
 
-* Start after rebooting the host-machine
+* Start after rebooting the local machine
 
 ```shell
 ./hbase-cluster.sh -p start_after_reboot -v [DOCKER_MACHINE_NAME]
 ```
 
-* Display logs for the services:
+* Display logs for the services
 
 ```shell
 ./hbase-cluster.sh -p logs -v [DOCKER_MACHINE_NAME]
 ```
 
-* Remove the whole services by running:
+* Remove the cluster
 
 ```shell
 ./hbase-cluster.sh -p down -v [DOCKER_MACHINE_NAME]
 ```
 
-Follows removing the setting on the host-machine:       
-```shell                                    
-docker-machine rm [DOCKER_MACHINE_NAME]
-DOCKER_MACHINE_NAME=[DOCKER_MACHINE_NAME] ./remove-localenv.sh
-```
 
 
 Test your local environment
