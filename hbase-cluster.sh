@@ -5,14 +5,25 @@ function start() {
     if [ "$is_host_info_included" = "0" ]; then
         sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "sudo sh -c \"echo '192.168.99.50  hbase-master datapipeline' >> /etc/hosts\""
     fi
-
     sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "cd '$(pwd)' && sudo cp ./resources/docker-compose-1.25.1-Linux-x86_64 /usr/local/bin/docker-compose"
     sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "sudo chmod +x /usr/local/bin/docker-compose"
     sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "cd '$(pwd)' && docker-compose up"
+	echo "Hello"
+}
+
+function start_after_reboot() {
+	docker-machine start "${LOCAL_VM_MACHINE}"
+	docker-machine regenerate-certs "${LOCAL_VM_MACHINE}"
+	docker-machine env "${LOCAL_VM_MACHINE}"
+	start
 }
 
 function stop() {
     sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "cd '$(pwd)' && docker-compose stop"
+}
+
+function down() {
+	sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "cd '$(pwd)' && docker-compose down"
 }
 
 function logs() {
@@ -20,7 +31,7 @@ function logs() {
 }
 
 function usage() {
-	echo "Usage: $0 -p [start|stop|logs] -v docker_machine_name"
+	echo "Usage: $0 -p [down|start|start_after_reboot|stop|logs] -v docker_machine_name"
 	exit 1
 }
 
@@ -37,7 +48,9 @@ function main() {
 	done
 
     case "$PURPOSE" in
+		down)      down     ;;
 		start)     start    ;;
+		start_after_reboot)  start_after_reboot ;;
 		stop)      stop     ;;
 		logs)      logs   ;;
 		*)         usage    ;;

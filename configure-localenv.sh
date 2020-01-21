@@ -55,6 +55,20 @@ copy_build_resources() {
 	cp ./resources/$FILE ./hbase/$FILE
 }
 
+allow_vm_machine_assessment() {
+	LOCAL_VM_NAME=datapipeline
+	echo
+	echo
+	echo "Register in ssh-connection by Yes"
+	echo
+	echo
+	echo "Insert tcuser, the default password of the docker-machine"
+	echo 
+	echo
+	echo "Insert exit after succeeding to join the docker-machine"
+ 	ssh docker@"${LOCAL_VM_NAME}"
+}
+
 help_function() {
 	echo ""
 	echo "Usage: $0 -v docker_machine_name"
@@ -95,7 +109,9 @@ main() {
 
 	echo "Copy Build Resources"
 	copy_build_resources
-}
 
+	echo "Allow Access to Docker Machine"
+	allow_vm_machine_assessment
+}
 main "$@"
 

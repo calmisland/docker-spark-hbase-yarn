@@ -9,20 +9,21 @@ FROM adoptopenjdk/openjdk8:jdk8u222-b10
 COPY *.sh /build/
 COPY wait_for_it.sh /
 
+RUN /build/prepare-container.sh
 ENV HBASE_VERSION 1.4.0
 
 ADD hbase-1.4.10-bin.tar.gz /opt
-RUN /build/prepare-hbase.sh && \
-    cd /opt/hbase && /build/build-hbase.sh \
-    cd / && /build/cleanup-hbase.sh && rm -rf /build
+RUN /build/prepare-hbase.sh
+
+ADD ./hbase-site-standalone.xml /opt/hbase/conf/hbase-site.xml
+ADD ./hbase-site-pesudo-distributed.xml /opt/hbase/conf/hbase-site-pesudo-distributed.xml
+ADD ./zoo.cfg /opt/hbase/conf/zoo.cfg
+ADD ./hbase-server /opt/hbase-server 
+
+RUN /build/build-hbase.sh && /build/cleanup-hbase.sh && rm -rf /build
 
 VOLUME /data
 
-ADD ./hbase-site.xml /opt/hbase/conf/hbase-site.xml
-
-ADD ./zoo.cfg /opt/hbase/conf/zoo.cfg
-
-ADD ./hbase-server /opt/hbase-server
 
 # HBase's zookeeper - used to find servers
 EXPOSE 2181

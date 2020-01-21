@@ -36,7 +36,7 @@ Then, connect your current shell session to this new virtual machine:
 Run Hadoop/HBase/Yarn
 ---------------------
 
-	$ ./start-hbase-cluster.sh -p [start|stop|logs] -v [DOCKER_MACHINE_NAME]
+	$ ./hbase-cluster.sh -p start -v [DOCKER_MACHINE_NAME]
 
 If everything goes fine, you should access to this URL:
 
@@ -49,6 +49,34 @@ HBASE ZooKeeper is running in port `2181`.
 Other important port is the NameNode, which is running on port `8020`. You can change this port though.
 
 Important Note: The containers are running with the `host` network mode, which means that containers are using host network interface. There is no isolation between host and containers from a network standpoint.
+
+
+Additional Examples
+=========
+
+There are 4 additional options to control containers.
+* Stop
+
+    $ ./hbase-cluster.sh -p stop -v [DOCKER_MACHINE_NAME]
+
+* Start after rebooting the host-machine
+
+    $ ./hbase-cluster.sh -p start_after_reboot -v [DOCKER_MACHINE_NAME]
+
+
+* Display logs for the services:
+
+    $ ./hbase-cluster.sh -p logs -v [DOCKER_MACHINE_NAME]
+
+
+* Remove the whole services by running:
+
+    $ ./hbase-cluster.sh -p down -v [DOCKER_MACHINE_NAME]
+
+Follows removing the setting on the host-machine:                                           
+    $ docker-machine rm [DOCKER_MACHINE_NAME]
+    $ DOCKER_MACHINE_NAME=[DOCKER_MACHINE_NAME] ./remove-localenv.sh
+
 
 Test your local environment
 ===========================
@@ -132,31 +160,4 @@ This pattern can be used to compose different kinds of tasks to the environment,
 - docker-compose.load_mockdata.yml
 
 You can customize them at your will.
-
-Tear down
-=========
-
-You can stop the services by running:
-
-    $ docker-compose stop
-
-This actions will not remove any data. So you can start it whenever you want to by doing:
-
-    $ docker-compose start
-
-
-You can remove your services by running:
-
-    $ docker-compose rm
-
-This will remove only containers that are stopped. It will remove the data. So pay attention.
-
-You can remove the local `/etc/hosts` by executing this:
-
-    $ ./remove-localenv.sh
-
-Finally, if you want to remove the VM, issue this command:
-
-    $ docker-machine rm $DOCKER_MACHINE_NAME 
-
 
