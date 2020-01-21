@@ -22,48 +22,86 @@ There are the prerequisites that needs to satisfy in order to run it hopefully w
 - Docker-Machine on Local: 0.16.1
 - Docker-Compose on Docker-Machine: 1.25.1
 
-Create local VM where to run these services
+QuickStart
 ===========================================
 
-	$ PROFILE=$AWS_PROFILE ./download-build-resources.sh
-    $ ./configure-localenv.sh -v $DOCKER_MACHINE_NAME 
+Set-up the new docker-machine to run the HBase Cluster. The docker-machine is an isloated environment from the local machine.
 
-Then, connect your current shell session to this new virtual machine:
+```shell
+PROFILE=[AWS_PROFILE] ./download-resources.sh
+./configure-localenv.sh -v [DOCKER_MACHINE_NAME]
+```
 
-    $ eval $(docker-machine env $DOCKER_MACHINE_NAME)
+Confirm the installation success
 
-From within your programs you can use the VM's name (e.g. dmhadoop) you use above to refer to the different services, e.g.:
+```shell
+eval $(docker-machine env [DOCKER_MACHINE_NAME])
+```
 
-    val conf = new Configuration()
-    conf.set("fs.defaultFS", "hdfs://dmhadoop:8020")
-    val fs = FileSystem.get(conf)
+Start cluster
 
-
-Run Hadoop/HBase/Yarn
----------------------
-
-	$ docker-machine ssh $DOCKER_MACHINE_NAME
-	# The docker-machine shared the directory, /User of the local machine.
-	$ cd $REPOSITORY_PATH_ON_LOCAL_MACHINE
-	$ ./configure-docker-machine-env.sh
-
-You can have a look at the logs this way:
-
-    $ docker-compose logs -ft
-
-Press `Ctrl+C` to stop the tail session.
+```shell
+./hbase-cluster.sh -p start -v [DOCKER_MACHINE_NAME]
+```
 
 If everything goes fine, you should access to this URL:
 
-- HDFS WebApp —> http://$DOCKER_MACHINE_NAME:50070/
-- YARN WebApp —> http://$DOCKER_MACHINE_NAME:8088/cluster/apps
-- HBASE WebApp —> http://$DOCKER_MACHINE_NAME:16010/master-status
+- HDFS WebApp —> http://[DOCKER_MACHINE_NAME]:50070/
+- YARN WebApp —> http://[DOCKER_MACHINE_NAME]:8088/cluster/apps
+- HBASE WebApp —> http://[DOCKER_MACHINE_NAME]:16010/master-status
 
 
 HBASE ZooKeeper is running in port `2181`.
 Other important port is the NameNode, which is running on port `8020`. You can change this port though.
 
 Important Note: The containers are running with the `host` network mode, which means that containers are using host network interface. There is no isolation between host and containers from a network standpoint.
+
+
+Tear Down
+=========
+
+When tearing down the entire set-up, runs:
+
+```shell
+./hbase-cluster.sh -p stop -v [DOCKER_MACHINE_NAME]       
+docker-machine rm [DOCKER_MACHINE_NAME]
+DOCKER_MACHINE_NAME=[DOCKER_MACHINE_NAME] ./remove-localenv.sh
+```
+
+Control the Cluster
+=========
+
+* Stop
+
+```shell
+./hbase-cluster.sh -p start -v [DOCKER_MACHINE_NAME]
+```
+
+* Stop
+
+```shell
+./hbase-cluster.sh -p stop -v [DOCKER_MACHINE_NAME]
+```
+
+* Start after rebooting the local machine
+
+```shell
+./hbase-cluster.sh -p start_after_reboot -v [DOCKER_MACHINE_NAME]
+```
+
+* Display logs for the services
+
+```shell
+./hbase-cluster.sh -p logs -v [DOCKER_MACHINE_NAME]
+```
+
+* Remove the cluster
+
+```shell
+./hbase-cluster.sh -p down -v [DOCKER_MACHINE_NAME]
+```
+
+
 
 Test your local environment
 ===========================
@@ -147,31 +185,4 @@ This pattern can be used to compose different kinds of tasks to the environment,
 - docker-compose.load_mockdata.yml
 
 You can customize them at your will.
-
-Tear down
-=========
-
-You can stop the services by running:
-
-    $ docker-compose stop
-
-This actions will not remove any data. So you can start it whenever you want to by doing:
-
-    $ docker-compose start
-
-
-You can remove your services by running:
-
-    $ docker-compose rm
-
-This will remove only containers that are stopped. It will remove the data. So pay attention.
-
-You can remove the local `/etc/hosts` by executing this:
-
-    $ ./remove-localenv.sh
-
-Finally, if you want to remove the VM, issue this command:
-
-    $ docker-machine rm $DOCKER_MACHINE_NAME 
-
 

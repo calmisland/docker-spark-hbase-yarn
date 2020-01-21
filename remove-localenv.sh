@@ -5,6 +5,12 @@
 #
 # set -x
 
+if [ -z "${DOCKER_MACHINE_NAME}" ]
+then
+	echo "No exist"
+	exit 1
+fi
+
 LOCAL_VM_NAME=${DOCKER_MACHINE_NAME}
 
 declare -a DOCKER_CONTAINERS=(
@@ -24,5 +30,10 @@ do
     fi
 
 done
+
+
+cp ~/.ssh/known_hosts ~/.ssh/known_hosts.bak
+grep -v "${LOCAL_VM_NAME}" ~/.ssh/known_hosts > ~/.ssh/known_hosts_new
+mv ~/.ssh/known_hosts_new ~/.ssh/known_hosts
 
 echo "Local /etc/hosts cleansed!"

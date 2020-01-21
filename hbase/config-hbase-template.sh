@@ -17,11 +17,5 @@ HBASE_BUILD_PACKAGES="curl"
 # Core list from docs
 #HBASE_BUILD_PACKAGES="$HBASE_BUILD_PACKAGES "
 
-# Optional:
-#HBASE_BUILD_PACKAGES="$HBASE_BUILD_PACKAGES "
-
-## Run time dependencies ##
-HBASE_RUN_PACKAGES="openjdk-8-jdk"
-
 
 # HOSTNAME=dmhadoop
