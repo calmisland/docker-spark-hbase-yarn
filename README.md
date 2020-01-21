@@ -36,7 +36,9 @@ Then, connect your current shell session to this new virtual machine:
 Run Hadoop/HBase/Yarn
 ---------------------
 
-	$ ./hbase-cluster.sh -p start -v [DOCKER_MACHINE_NAME]
+```shell
+./hbase-cluster.sh -p start -v [DOCKER_MACHINE_NAME]
+```
 
 If everything goes fine, you should access to this URL:
 
@@ -57,25 +59,33 @@ Additional Examples
 There are 4 additional options to control containers.
 * Stop
 
-    $ ./hbase-cluster.sh -p stop -v [DOCKER_MACHINE_NAME]
+```shell
+./hbase-cluster.sh -p stop -v [DOCKER_MACHINE_NAME]
+```
 
 * Start after rebooting the host-machine
 
-    $ ./hbase-cluster.sh -p start_after_reboot -v [DOCKER_MACHINE_NAME]
-
+```shell
+./hbase-cluster.sh -p start_after_reboot -v [DOCKER_MACHINE_NAME]
+```
 
 * Display logs for the services:
 
-    $ ./hbase-cluster.sh -p logs -v [DOCKER_MACHINE_NAME]
-
+```shell
+./hbase-cluster.sh -p logs -v [DOCKER_MACHINE_NAME]
+```
 
 * Remove the whole services by running:
 
-    $ ./hbase-cluster.sh -p down -v [DOCKER_MACHINE_NAME]
+```shell
+./hbase-cluster.sh -p down -v [DOCKER_MACHINE_NAME]
+```
 
-Follows removing the setting on the host-machine:                                           
-    $ docker-machine rm [DOCKER_MACHINE_NAME]
-    $ DOCKER_MACHINE_NAME=[DOCKER_MACHINE_NAME] ./remove-localenv.sh
+Follows removing the setting on the host-machine:       
+```shell                                    
+docker-machine rm [DOCKER_MACHINE_NAME]
+DOCKER_MACHINE_NAME=[DOCKER_MACHINE_NAME] ./remove-localenv.sh
+```
 
 
 Test your local environment
