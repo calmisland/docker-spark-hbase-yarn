@@ -88,24 +88,24 @@ main() {
 		help_function
 	fi
 
-	# docker-machine create -d virtualbox --virtualbox-memory "4096" $LOCAL_VM_NAME
-	# IP=$(docker-machine ip ${LOCAL_VM_NAME})
-	# if [ -z "$IP" ] 
-	# then
-	# 	echo "Inject a static ip to docker-machine"
-	# 	config_vm_ip
-	# fi
+	docker-machine create -d virtualbox --virtualbox-memory "4096" $LOCAL_VM_NAME
+	IP=$(docker-machine ip ${LOCAL_VM_NAME})
+	if [ -z "$IP" ] 
+	then
+		echo "Inject a static ip to docker-machine"
+		config_vm_ip
+	fi
 
-	# echo "docker-machine ip: ${IP}"
+	echo "docker-machine ip: ${IP}"
 
-	# echo "Set IP for containers on the local machine"
-	# set_local_network
+	echo "Set IP for containers on the local machine"
+	set_local_network
 
-	# echo "Set hostname for HBase"
-	# set_hbase_hostname
+	echo "Set hostname for HBase"
+	set_hbase_hostname
 
-	# echo "Copy Build Resources"
-	# copy_build_resources
+	echo "Copy Build Resources"
+	copy_build_resources
 
 	echo "Allow Access to Docker Machine"
 	allow_vm_machine_assessment
