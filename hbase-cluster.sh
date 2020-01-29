@@ -3,7 +3,7 @@ DOCKER_MACHINE_DEFAULT_PASSWORD=tcuser
 function start() {
     is_host_info_included=$(sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "cat /etc/hosts | grep -c \"192.168.99.50\"")
     if [ "$is_host_info_included" = "0" ]; then
-        sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "sudo sh -c \"echo '192.168.99.50  hbase-master datapipeline' >> /etc/hosts\""
+        sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "sudo sh -c \"echo '192.168.99.50  hbase-master "${LOCAL_VM_MACHINE}"' >> /etc/hosts\""
     fi
     sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "cd '$(pwd)' && sudo cp ./resources/docker-compose-1.25.1-Linux-x86_64 /usr/local/bin/docker-compose"
     sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "sudo chmod +x /usr/local/bin/docker-compose"

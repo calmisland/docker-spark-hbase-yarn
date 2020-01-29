@@ -58,13 +58,11 @@ copy_build_resources() {
 allow_vm_machine_assessment() {
 	echo
 	echo
-	echo "Register in ssh-connection by Yes"
-	echo
-	echo
-	echo "Insert tcuser, the default password of the docker-machine"
-	echo 
-	echo
-	echo "Insert exit after succeeding to join the docker-machine"
+	echo "Register ssh connection to the docker-machine ${LOCAL_VM_NAME}"
+	echo "Step1. Register in ssh-connection by Yes"
+	echo "Step2. Insert 'tcuser', the default password of the docker-machine"
+	echo "Step3. Insert 'exit' after succeeding to join the docker-machine"
+
  	ssh docker@"${LOCAL_VM_NAME}"
 }
 
@@ -90,24 +88,24 @@ main() {
 		help_function
 	fi
 
-	docker-machine create -d virtualbox --virtualbox-memory "4096" $LOCAL_VM_NAME
-	IP=$(docker-machine ip ${LOCAL_VM_NAME})
-	if [ -z "$IP" ] 
-	then
-		echo "Inject a static ip to docker-machine"
-		config_vm_ip
-	fi
+	# docker-machine create -d virtualbox --virtualbox-memory "4096" $LOCAL_VM_NAME
+	# IP=$(docker-machine ip ${LOCAL_VM_NAME})
+	# if [ -z "$IP" ] 
+	# then
+	# 	echo "Inject a static ip to docker-machine"
+	# 	config_vm_ip
+	# fi
 
-	echo "docker-machine ip: ${IP}"
+	# echo "docker-machine ip: ${IP}"
 
-	echo "Set IP for containers on the local machine"
-	set_local_network
+	# echo "Set IP for containers on the local machine"
+	# set_local_network
 
-	echo "Set hostname for HBase"
-	set_hbase_hostname
+	# echo "Set hostname for HBase"
+	# set_hbase_hostname
 
-	echo "Copy Build Resources"
-	copy_build_resources
+	# echo "Copy Build Resources"
+	# copy_build_resources
 
 	echo "Allow Access to Docker Machine"
 	allow_vm_machine_assessment
