@@ -56,16 +56,13 @@ copy_build_resources() {
 }
 
 allow_vm_machine_assessment() {
-	LOCAL_VM_NAME=datapipeline
 	echo
 	echo
-	echo "Register in ssh-connection by Yes"
-	echo
-	echo
-	echo "Insert tcuser, the default password of the docker-machine"
-	echo 
-	echo
-	echo "Insert exit after succeeding to join the docker-machine"
+	echo "Register ssh connection to the docker-machine ${LOCAL_VM_NAME}"
+	echo "Step1. Register in ssh-connection by Yes"
+	echo "Step2. Insert 'tcuser', the default password of the docker-machine"
+	echo "Step3. Insert 'exit' after succeeding to join the docker-machine"
+
  	ssh docker@"${LOCAL_VM_NAME}"
 }
 

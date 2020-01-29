@@ -2,3 +2,4 @@
 target/
 **/*.tgz
 **/*.tar.gz
+**/hbase/config-hbase.sh
