@@ -56,7 +56,6 @@ copy_build_resources() {
 }
 
 allow_vm_machine_assessment() {
-	LOCAL_VM_NAME=datapipeline
 	echo
 	echo
 	echo "Register in ssh-connection by Yes"
