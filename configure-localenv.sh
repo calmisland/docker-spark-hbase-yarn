@@ -62,6 +62,8 @@ allow_vm_machine_assessment() {
 	echo "Step1. Register in ssh-connection by Yes"
 	echo "Step2. Insert 'tcuser', the default password of the docker-machine"
 	echo "Step3. Insert 'exit' after succeeding to join the docker-machine"
+	echo
+	echo
 
  	ssh docker@"${LOCAL_VM_NAME}"
 }

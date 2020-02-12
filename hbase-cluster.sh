@@ -1,14 +1,18 @@
 #!/bin/bash
 DOCKER_MACHINE_DEFAULT_PASSWORD=tcuser
+function create_table() {
+	$ACCESS_DOCKER_MACHINE_SHELL "docker cp $(pwd)/hbase/hbase-schema-local.rb hbase-master:/opt/hbase/conf/hbase-schema.rb"
+	$ACCESS_DOCKER_MACHINE_SHELL "docker exec hbase-master bash -c 'cat /opt/hbase/conf/hbase-schema.rb | /opt/hbase/bin/hbase shell'"
+}
+
 function start() {
-    is_host_info_included=$(sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "cat /etc/hosts | grep -c \"192.168.99.50\"")
+	is_host_info_included=$($ACCESS_DOCKER_MACHINE_SHELL "cat /etc/hosts | grep -c \"192.168.99.50\"")
     if [ "$is_host_info_included" = "0" ]; then
-        sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "sudo sh -c \"echo '192.168.99.50  hbase-master "${LOCAL_VM_MACHINE}"' >> /etc/hosts\""
+        $ACCESS_DOCKER_MACHINE_SHELL "sudo sh -c \"echo '192.168.99.50  hbase-master "${LOCAL_VM_MACHINE}"' >> /etc/hosts\""
     fi
-    sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "cd '$(pwd)' && sudo cp ./resources/docker-compose-1.25.1-Linux-x86_64 /usr/local/bin/docker-compose"
-    sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "sudo chmod +x /usr/local/bin/docker-compose"
-    sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "cd '$(pwd)' && docker-compose up"
-	echo "Hello"
+    $ACCESS_DOCKER_MACHINE_SHELL "cd '$(pwd)' && sudo cp ./resources/docker-compose-1.25.1-Linux-x86_64 /usr/local/bin/docker-compose"
+    $ACCESS_DOCKER_MACHINE_SHELL "sudo chmod +x /usr/local/bin/docker-compose"
+    $ACCESS_DOCKER_MACHINE_SHELL "cd '$(pwd)' && docker-compose up"
 }
 
 function start_after_reboot() {
@@ -19,15 +23,15 @@ function start_after_reboot() {
 }
 
 function stop() {
-    sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "cd '$(pwd)' && docker-compose stop"
+    $ACCESS_DOCKER_MACHINE_SHELL "cd '$(pwd)' && docker-compose stop"
 }
 
 function down() {
-	sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "cd '$(pwd)' && docker-compose down"
+	$ACCESS_DOCKER_MACHINE_SHELL "cd '$(pwd)' && docker-compose down"
 }
 
 function logs() {
-    sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}" "cd '$(pwd)' && docker-compose logs -ft"
+    $ACCESS_DOCKER_MACHINE_SHELL "cd '$(pwd)' && docker-compose logs -ft"
 }
 
 function usage() {
@@ -47,7 +51,10 @@ function main() {
 	esac
 	done
 
+	ACCESS_DOCKER_MACHINE_SHELL="sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}""
+
     case "$PURPOSE" in
+		create_table) create_table	;;
 		down)      down     ;;
 		start)     start    ;;
 		start_after_reboot)  start_after_reboot ;;
