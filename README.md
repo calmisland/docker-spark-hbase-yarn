@@ -39,13 +39,18 @@ eval $(docker-machine env [DOCKER_MACHINE_NAME])
 ```
 
 Start cluster. 
-Go to the next step, Create Table after you see the below log format, hbase-master | 2020-02-12 02:29:56,048 INFO  [regionserver/hbase-master/192.168.99.50:0.logRoller] ....
-
 ```shell
 ./hbase-cluster.sh -p start -v [DOCKER_MACHINE_NAME]
 ```
 
-Create Table.
+You see the below log after 1-2 minutes
+```shell
+...
+hbase-master | 2020-02-12 02:29:56,048 INFO  [regionserver/hbase-master/192.168.99.50:0.logRoller]
+...
+```
+
+Create table.
 ```shell
 ./hbase-cluster.sh -p create_table -v [DOCKER_MACHINE_NAME]
 ```
