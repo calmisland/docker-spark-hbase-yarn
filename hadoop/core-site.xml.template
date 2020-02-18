@@ -1,6 +1,6 @@
   <configuration>
       <property>
           <name>fs.defaultFS</name>
-          <value>hdfs://HOSTNAME:8020</value>
+          <value>hdfs://HOSTNAME:NAMENODE_PORT</value>
       </property>
   </configuration>

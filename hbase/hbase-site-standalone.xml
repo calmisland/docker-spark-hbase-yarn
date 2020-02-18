@@ -11,6 +11,16 @@
   </property>
 
   <property>
+    <name>hbase.master.port</name>
+    <value>16000</value>
+  </property>
+
+  <property>
+    <name>hbase.regionserver.port</name>
+    <value>16020</value>
+  </property>
+
+  <property>
     <name>hbase.master.dns.interface</name>
     <value>default</value>
   </property>

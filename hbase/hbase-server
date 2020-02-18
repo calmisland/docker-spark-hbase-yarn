@@ -1,14 +1,5 @@
 #!/bin/bash
 # Start HBase
-#  1) hbase master (which runs the local region server)
-
-sed -i 's/HOSTNAME/'"$HOSTNAME"'/' /opt/hbase/conf/hbase-site.xml
-sed -i 's/HOSTNAME/'"$HOSTNAME"'/' /opt/hbase/conf/hbase-site-pesudo-distributed.xml 
-
-sed -i 's/HOSTNAME/'"$HOSTNAME"'/' /opt/hbase/conf/zoo.cfg
-sed -i 's/localhost/'"$HOSTNAME"'/' /opt/hbase/conf/regionservers
-sed -i s/NAMENODE_PORT/$NAMENODE_PORT/ /opt/hbase/conf/hbase-site.xml
-sed -i s/NAMENODE_PORT/$NAMENODE_PORT/ /opt/hbase/conf/hbase-site-pesudo-distributed.xml
 
 logs_dir=/data/logs
 

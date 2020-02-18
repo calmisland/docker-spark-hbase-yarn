@@ -28,38 +28,31 @@ QuickStart
 Set-up the new docker-machine to run the HBase Cluster. The docker-machine is an isloated environment from the local machine.
 
 ```shell
+chmod +x ./static-info.sh
 PROFILE=[AWS_PROFILE] ./download-resources.sh
-./configure-localenv.sh -v [DOCKER_MACHINE_NAME]
-```
-
-Confirm the installation success
-
-```shell
-eval $(docker-machine env [DOCKER_MACHINE_NAME])
+./configure-localenv.sh
 ```
 
 Start cluster. 
 ```shell
-./hbase-cluster.sh -p start -v [DOCKER_MACHINE_NAME]
+./hbase-cluster.sh -p start
 ```
 
-You see the below log after 1-2 minutes
+Then Create table after 2 minutes.
 ```shell
-...
-hbase-master | 2020-02-12 02:29:56,048 INFO  [regionserver/hbase-master/192.168.99.50:0.logRoller]
-...
+./hbase-cluster.sh -p create_table
 ```
 
-Create table.
+Stop hbase cluster. The docker virtual machine keeps running.
 ```shell
-./hbase-cluster.sh -p create_table -v [DOCKER_MACHINE_NAME]
+./hbase-cluster.sh -p stop
 ```
 
 If everything goes fine, you should access to this URL:
 
-- HDFS WebApp —> http://[DOCKER_MACHINE_NAME]:50070/
-- YARN WebApp —> http://[DOCKER_MACHINE_NAME]:8088/cluster/apps
-- HBASE WebApp —> http://[DOCKER_MACHINE_NAME]:16010/master-status
+- HDFS WebApp —> http://datapipeline:50070/
+- YARN WebApp —> http://datapipeline:8088/cluster/apps
+- HBASE WebApp —> http://datapipeline:16010/master-status
 
 
 HBASE ZooKeeper is running in port `2181`.
@@ -74,42 +67,57 @@ Tear Down
 When tearing down the entire set-up, runs:
 
 ```shell
-./hbase-cluster.sh -p stop -v [DOCKER_MACHINE_NAME]       
-docker-machine rm [DOCKER_MACHINE_NAME]
-DOCKER_MACHINE_NAME=[DOCKER_MACHINE_NAME] ./remove-localenv.sh
+./hbase-cluster.sh -p stop       
+./remove-localenv.sh
 ```
 
 Control the Cluster
 =========
 
-* Stop
+* Create Table
+
+Create Table at the first time configuring the local environment.
 
 ```shell
-./hbase-cluster.sh -p start -v [DOCKER_MACHINE_NAME]
+./hbase-cluster.sh -p start
+```
+
+* Restart
+
+Restart the docker-vm-machine and the hbase-cluster.
+
+```shell
+./hbase-cluster.sh -p restart
+```
+
+* Start
+
+Start the docker-vm-machine if it is closed, and the hbase-cluster.
+
+```shell
+./hbase-cluster.sh -p start
 ```
 
 * Stop
 
-```shell
-./hbase-cluster.sh -p stop -v [DOCKER_MACHINE_NAME]
-```
-
-* Start after rebooting the local machine
+Stop the docker-vm-machine and the hbase cluster.
 
 ```shell
-./hbase-cluster.sh -p start_after_reboot -v [DOCKER_MACHINE_NAME]
+./hbase-cluster.sh -p stop
 ```
 
 * Display logs for the services
 
 ```shell
-./hbase-cluster.sh -p logs -v [DOCKER_MACHINE_NAME]
+./hbase-cluster.sh -p logs
 ```
 
-* Remove the cluster
+* Destroy the cluster
+
+Stop the docker-vm-machine and destroy the hbase cluster.
 
 ```shell
-./hbase-cluster.sh -p down -v [DOCKER_MACHINE_NAME]
+./hbase-cluster.sh -p destroy
 ```
 
 
