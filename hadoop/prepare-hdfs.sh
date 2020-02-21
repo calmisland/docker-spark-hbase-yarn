@@ -5,7 +5,7 @@ source /build/config-hdfs.sh
 
 cd /usr/local/hadoop-2.8.5 && cd /usr/local/spark-2.4.4-bin-without-hadoop
 ln -s /usr/local/hadoop-2.8.5 $HADOOP_PREFIX
-ln -s /usr/local/spark-2.4.4-bin-without-hadoop  /usr/local/spark
+ln -s /usr/local/spark-2.4.4-bin-without-hadoop  $SPARK_HOME
 
 # passwordless ssh
 rm -f /etc/ssh/ssh_host_dsa_key /etc/ssh/ssh_host_rsa_key /root/.ssh/id_rsa
@@ -45,6 +45,11 @@ chmod 700 /etc/bootstrap.sh
 # fix the 254 error code
 service ssh start && $HADOOP_PREFIX/etc/hadoop/hadoop-env.sh && $HADOOP_PREFIX/sbin/start-dfs.sh && $HADOOP_PREFIX/bin/hdfs dfs -mkdir -p /user/root
 service ssh start && $HADOOP_PREFIX/etc/hadoop/hadoop-env.sh && $HADOOP_PREFIX/sbin/start-dfs.sh && $HADOOP_PREFIX/bin/hdfs dfs -put $HADOOP_PREFIX/etc/hadoop/ input
+
+
+echo "export SPARK_DIST_CLASSPATH=$($HADOOP_PREFIX/bin/hadoop classpath)" >> $SPARK_HOME/conf/spark-env.sh
+echo "export SPARK_LOCAL_IP=127.0.0.1" >> $SPARK_HOME/bin/load-spark-env.sh
+chmod +x $SPARK_HOME/conf/spark-env.sh
 
 # fixing the libhadoop.so like a boss
 # rm -rf /usr/local/hadoop/lib/native/*
