@@ -1,6 +1,6 @@
-#!/bin/sh -x
-
-. /build/config-hbase.sh
+#!/bin/bash
+set -euxo pipefail
+source /build/config-hbase.sh
 
 AUTO_ADDED_PACKAGES=`apt-mark showauto`
 

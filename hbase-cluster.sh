@@ -1,32 +1,57 @@
 #!/bin/bash
-DOCKER_MACHINE_DEFAULT_PASSWORD=tcuser
+set -euxo pipefail
+
+source static-info.sh
+ACCESS_DOCKER_MACHINE_SHELL="sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${DOCKER_MACHINE_NAME}""
+
 function create_table() {
 	$ACCESS_DOCKER_MACHINE_SHELL "docker cp $(pwd)/hbase/hbase-schema-local.rb hbase-master:/opt/hbase/conf/hbase-schema.rb"
-	$ACCESS_DOCKER_MACHINE_SHELL "docker exec hbase-master bash -c 'cat /opt/hbase/conf/hbase-schema.rb | /opt/hbase/bin/hbase shell'"
+	$ACCESS_DOCKER_MACHINE_SHELL "docker exec ${HBASE_CONTAINER} bash -c 'cat /opt/hbase/conf/hbase-schema.rb | /opt/hbase/bin/hbase shell'"
 }
 
 function start() {
-	is_host_info_included=$($ACCESS_DOCKER_MACHINE_SHELL "cat /etc/hosts | grep -c \"192.168.99.50\"")
-    if [ "$is_host_info_included" = "0" ]; then
-        $ACCESS_DOCKER_MACHINE_SHELL "sudo sh -c \"echo '192.168.99.50  hbase-master "${LOCAL_VM_MACHINE}"' >> /etc/hosts\""
-    fi
-    $ACCESS_DOCKER_MACHINE_SHELL "cd '$(pwd)' && sudo cp ./resources/docker-compose-1.25.1-Linux-x86_64 /usr/local/bin/docker-compose"
+	start_docker_machine
+	configure_ip
+	start_cluster
+}
+
+function start_docker_machine() {
+	status=$(docker-machine status "${DOCKER_MACHINE_NAME}")
+	if [ "${status}" = "Stopped" ]; then
+		docker-machine start "${DOCKER_MACHINE_NAME}"
+		ip=$(docker-machine ip ${DOCKER_MACHINE_NAME})
+		docker-machine regenerate-certs -f "${DOCKER_MACHINE_NAME}"
+		docker-machine env "${DOCKER_MACHINE_NAME}"
+	else
+		docker-machine stop  "${DOCKER_MACHINE_NAME}"
+	fi
+}
+
+function configure_ip() {
+	ip=$(docker-machine ip ${DOCKER_MACHINE_NAME})
+
+	ETC_HOST_LOCALHOST_LINE="127.0.0.1 localhost localhost.local"
+	REGEX_ETC_HOST_LOCALHOST_LINE="^.*127.0.0.1.*\$"
+	if docker-machine ssh "${DOCKER_MACHINE_NAME}" "grep '${HBASE_CONTAINER}' /etc/hosts >/dev/null"; then
+	eval $(docker-machine ssh "${DOCKER_MACHINE_NAME}" "sudo sed -i 's/^.*${HBASE_CONTAINER}.*\$/${IP} ${HBASE_CONTAINER} ${DOCKER_MACHINE_NAME}/' /etc/hosts")
+	eval $(docker-machine ssh "${DOCKER_MACHINE_NAME}" "sudo sed -i 's/${REGEX_ETC_HOST_LOCALHOST_LINE}/${ETC_HOST_LOCALHOST_LINE}/' /etc/hosts")
+	else
+	docker-machine ssh "${DOCKER_MACHINE_NAME}" "sudo sh -c \"echo '${IP} ${HBASE_CONTAINER} ${DOCKER_MACHINE_NAME}' >> /etc/hosts\""
+	docker-machine ssh "${DOCKER_MACHINE_NAME}" "sudo sed -i 's/${REGEX_ETC_HOST_LOCALHOST_LINE}/${ETC_HOST_LOCALHOST_LINE}/' /etc/hosts"
+	fi
+}
+function start_cluster() {
+	$ACCESS_DOCKER_MACHINE_SHELL "cd '$(pwd)' && sudo cp ./resources/docker-compose-1.25.1-Linux-x86_64 /usr/local/bin/docker-compose"
     $ACCESS_DOCKER_MACHINE_SHELL "sudo chmod +x /usr/local/bin/docker-compose"
     $ACCESS_DOCKER_MACHINE_SHELL "cd '$(pwd)' && docker-compose up"
 }
 
-function start_after_reboot() {
-	docker-machine start "${LOCAL_VM_MACHINE}"
-	docker-machine regenerate-certs "${LOCAL_VM_MACHINE}"
-	docker-machine env "${LOCAL_VM_MACHINE}"
-	start
-}
 
 function stop() {
     $ACCESS_DOCKER_MACHINE_SHELL "cd '$(pwd)' && docker-compose stop"
 }
 
-function down() {
+function destroy() {
 	$ACCESS_DOCKER_MACHINE_SHELL "cd '$(pwd)' && docker-compose down"
 }
 
@@ -35,29 +60,25 @@ function logs() {
 }
 
 function usage() {
-	echo "Usage: $0 -p [down|start|start_after_reboot|stop|logs] -v docker_machine_name"
+	echo "Usage: $0 -p [create_table|down|start|stop|logs]"
 	exit 1
 }
 
 function main() {
     [ -z "$*" ] && usage
 
-    while getopts "p:v:" opt
+    while getopts "p:" opt
 	do
 	case "$opt" in
       p ) PURPOSE="$OPTARG" ;;
-      v ) LOCAL_VM_MACHINE="$OPTARG" ;;
 	  * ) usage ;;
 	esac
 	done
 
-	ACCESS_DOCKER_MACHINE_SHELL="sshpass -p "${DOCKER_MACHINE_DEFAULT_PASSWORD}" ssh docker@"${LOCAL_VM_MACHINE}""
-
     case "$PURPOSE" in
 		create_table) create_table	;;
-		down)      down     ;;
+		destroy)      destroy     ;;
 		start)     start    ;;
-		start_after_reboot)  start_after_reboot ;;
 		stop)      stop     ;;
 		logs)      logs   ;;
 		*)         usage    ;;
