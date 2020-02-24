@@ -83,17 +83,9 @@ Create Table at the first time configuring the local environment.
 ./hbase-cluster.sh -p start
 ```
 
-* Restart
-
-Restart the docker-vm-machine and the hbase-cluster.
-
-```shell
-./hbase-cluster.sh -p restart
-```
-
 * Start
 
-Start the docker-vm-machine if it is closed, and the hbase-cluster.
+Use 1) Start the docker-vm-machine and the hbase-cluster 2) Disconnect to docker-vm-machine because DHCP assigns a different ip to docker-vm-machine.
 
 ```shell
 ./hbase-cluster.sh -p start

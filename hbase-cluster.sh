@@ -22,6 +22,8 @@ function start_docker_machine() {
 		ip=$(docker-machine ip ${DOCKER_MACHINE_NAME})
 		docker-machine regenerate-certs -f "${DOCKER_MACHINE_NAME}"
 		docker-machine env "${DOCKER_MACHINE_NAME}"
+	else
+		docker-machine stop  "${DOCKER_MACHINE_NAME}"
 	fi
 }
 
@@ -53,11 +55,6 @@ function destroy() {
 	$ACCESS_DOCKER_MACHINE_SHELL "cd '$(pwd)' && docker-compose down"
 }
 
-function restart() {
-	docker-machine stop  "${DOCKER_MACHINE_NAME}"
-	start
-}
-
 function logs() {
     $ACCESS_DOCKER_MACHINE_SHELL "cd '$(pwd)' && docker-compose logs -ft"
 }
@@ -83,7 +80,6 @@ function main() {
 		destroy)      destroy     ;;
 		start)     start    ;;
 		stop)      stop     ;;
-		restart)	restart	;;
 		logs)      logs   ;;
 		*)         usage    ;;
 	esac
