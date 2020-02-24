@@ -28,8 +28,9 @@ QuickStart
 Set-up the new docker-machine to run the HBase Cluster. The docker-machine is an isloated environment from the local machine.
 
 ```shell
+#AWS_PROFILE has a permission to download files on a bucket, data-collection-code-artifacts.
 chmod +x ./static-info.sh
-PROFILE=[AWS_PROFILE] ./download-resources.sh
+PROFILE=$AWS_PROFILE ./download-resources.sh
 ./configure-localenv.sh
 ```
 
