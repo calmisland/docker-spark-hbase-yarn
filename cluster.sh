@@ -17,14 +17,12 @@ function start() {
 
 function start_docker_machine() {
 	status=$(docker-machine status "${DOCKER_MACHINE_NAME}")
-	if [ "${status}" = "Stopped" ]; then
-		docker-machine start "${DOCKER_MACHINE_NAME}"
-		ip=$(docker-machine ip ${DOCKER_MACHINE_NAME})
-		docker-machine regenerate-certs -f "${DOCKER_MACHINE_NAME}"
-		docker-machine env "${DOCKER_MACHINE_NAME}"
-	else
-		docker-machine stop  "${DOCKER_MACHINE_NAME}"
+	if [ "${status}" != "Stopped" ]; then
+		docker-machine stop "${DOCKER_MACHINE_NAME}"
 	fi
+	docker-machine start "${DOCKER_MACHINE_NAME}"
+	docker-machine regenerate-certs -f "${DOCKER_MACHINE_NAME}"
+	docker-machine env "${DOCKER_MACHINE_NAME}"	
 }
 
 function configure_ip() {
@@ -41,6 +39,7 @@ function configure_ip() {
 	fi
 }
 function start_cluster() {
+	clear_mock_aws_service
 	$ACCESS_DOCKER_MACHINE_SHELL "cd '$(pwd)' && sudo cp ./resources/docker-compose-1.25.1-Linux-x86_64 /usr/local/bin/docker-compose"
     $ACCESS_DOCKER_MACHINE_SHELL "sudo chmod +x /usr/local/bin/docker-compose"
     $ACCESS_DOCKER_MACHINE_SHELL "cd '$(pwd)' && docker-compose up"
@@ -48,6 +47,7 @@ function start_cluster() {
 
 
 function stop() {
+	clear_mock_aws_service
     $ACCESS_DOCKER_MACHINE_SHELL "cd '$(pwd)' && docker-compose stop"
 }
 
@@ -57,6 +57,10 @@ function destroy() {
 
 function logs() {
     $ACCESS_DOCKER_MACHINE_SHELL "cd '$(pwd)' && docker-compose logs -ft"
+}
+
+function clear_mock_aws_service() {
+	$ACCESS_DOCKER_MACHINE_SHELL "sudo rm -rf /tmp/localstack"
 }
 
 function usage() {

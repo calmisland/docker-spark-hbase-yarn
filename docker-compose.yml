@@ -13,3 +13,13 @@ services:
         entrypoint: /wait_for_it.sh localhost:8020 -- /opt/hbase-server
         depends_on:
             - hdfs
+
+    aws:
+        build: ./aws
+        container_name: "aws"
+        ports:
+            - 4568:4568
+            - 4574:4574
+        volumes:
+            - "/tmp/localstack:/tmp/localstack"
+            - "/var/run/docker.sock:/var/run/docker.sock"
