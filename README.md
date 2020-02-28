@@ -29,24 +29,24 @@ Set-up the new docker-machine to run the HBase Cluster. The docker-machine is an
 
 ```shell
 #AWS_PROFILE has a permission to download files on a bucket, data-collection-code-artifacts.
-chmod +x ./static-info.sh
+chmod -R +x ./*.sh
 PROFILE=$AWS_PROFILE ./download-resources.sh
 ./configure-localenv.sh
 ```
 
 Start cluster. 
 ```shell
-./hbase-cluster.sh -p start
+./cluster.sh -p start
 ```
 
 Then Create table after 2 minutes.
 ```shell
-./hbase-cluster.sh -p create_table
+./cluster.sh -p create_table
 ```
 
 Stop hbase cluster. The docker virtual machine keeps running.
 ```shell
-./hbase-cluster.sh -p stop
+./cluster.sh -p stop
 ```
 
 If everything goes fine, you should access to this URL:
@@ -68,7 +68,7 @@ Tear Down
 When tearing down the entire set-up, runs:
 
 ```shell
-./hbase-cluster.sh -p stop       
+./cluster.sh -p stop       
 ./remove-localenv.sh
 ```
 
@@ -80,7 +80,7 @@ Control the Cluster
 Create Table at the first time configuring the local environment.
 
 ```shell
-./hbase-cluster.sh -p start
+./cluster.sh -p start
 ```
 
 * Start
@@ -88,7 +88,7 @@ Create Table at the first time configuring the local environment.
 Use 1) Start the docker-vm-machine and the hbase-cluster 2) Disconnect to docker-vm-machine because DHCP assigns a different ip to docker-vm-machine.
 
 ```shell
-./hbase-cluster.sh -p start
+./cluster.sh -p start
 ```
 
 * Stop
@@ -96,13 +96,13 @@ Use 1) Start the docker-vm-machine and the hbase-cluster 2) Disconnect to docker
 Stop the docker-vm-machine and the hbase cluster.
 
 ```shell
-./hbase-cluster.sh -p stop
+./cluster.sh -p stop
 ```
 
 * Display logs for the services
 
 ```shell
-./hbase-cluster.sh -p logs
+./cluster.sh -p logs
 ```
 
 * Destroy the cluster
@@ -110,7 +110,7 @@ Stop the docker-vm-machine and the hbase cluster.
 Stop the docker-vm-machine and destroy the hbase cluster.
 
 ```shell
-./hbase-cluster.sh -p destroy
+./cluster.sh -p destroy
 ```
 
 
