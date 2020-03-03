@@ -17,7 +17,7 @@ function start() {
 
 function start_docker_machine() {
 	status=$(docker-machine status "${DOCKER_MACHINE_NAME}")
-	if [ "${status}" != "Stopped" ]; then
+	if [ "${status}" != "Saved" -a "${status}" != "Stopped" ]; then
 		docker-machine stop "${DOCKER_MACHINE_NAME}"
 	fi
 	docker-machine start "${DOCKER_MACHINE_NAME}"
