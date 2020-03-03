@@ -18,8 +18,11 @@ services:
         build: ./aws
         container_name: "aws"
         ports:
+            # Kinesis
             - 4568:4568
+            # Lambda
             - 4574:4574
+            # DynamoDB
             - 4569:4569
             - 8080:8080
         volumes:
