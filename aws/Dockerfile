@@ -4,10 +4,12 @@ FROM localstack/localstack:latest
 EXPOSE 4568
 # Lambda
 EXPOSE 4574
+# DynamoDB
+EXPOSE 4569
 # WEB-PORT-UI
 EXPOSE 8080
 
-ENV SERVICES lambda,kinesis
+ENV SERVICES lambda,kinesis,dynamodb
 ENV DEBUG 1
 ENV DATA_DIR /tmp/localstack/data
 ENV LAMBDA_EXECUTOR local
