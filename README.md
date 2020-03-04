@@ -25,10 +25,9 @@ There are the prerequisites that needs to satisfy in order to run it hopefully w
 QuickStart
 ===========================================
 
-Set-up the new docker-machine to run the HBase Cluster. The docker-machine is an isloated environment from the local machine.
+Set-up the new docker-machine to run the HBase Cluster. The docker-machine is an isloated environment from the local machine. $AWS_PROFILE has a permission to download files on a bucket, data-collection-code-artifacts. Check the profile list on '~/.aws/credentials'. If you don't have any profile, request a profile to Senior Developer.
 
 ```shell
-#AWS_PROFILE has a permission to download files on a bucket, data-collection-code-artifacts.
 chmod -R +x ./*.sh
 PROFILE=$AWS_PROFILE ./download-resources.sh
 ./configure-localenv.sh
