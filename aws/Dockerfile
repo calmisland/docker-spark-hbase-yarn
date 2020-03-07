@@ -14,6 +14,7 @@ ENV DEBUG 1
 ENV DATA_DIR /tmp/localstack/data
 ENV LAMBDA_EXECUTOR local
 ENV DOCKER_HOST unix:///var/run/docker.sock
+ENV DEFAULT_REGION ap-northeast-2
 
 RUN mkdir /build
 ADD configure-box.sh /build/
